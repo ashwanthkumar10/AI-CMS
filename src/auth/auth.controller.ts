@@ -6,6 +6,10 @@ import { RegisterDto } from './dto/register.dto';
 import { AuthService } from './auth.service';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
 import { ApiBearerAuth } from '@nestjs/swagger';
+import { Role, User } from 'src/users/entities/user.entity';
+import { CurrentUser } from './decorators/current-user.decorator';
+import { Roles } from './decorators/roles.decorator';
+import { RolesGuard } from './guards/roles.guard';
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -44,8 +48,9 @@ export class AuthController {
 
   @Get('profile')
   @ApiBearerAuth('JWT-auth')
-  @UseGuards(JwtAuthGuard)
-  profile(@Req() req: any) {
-    return this.authService.profile(req.user);
+  @UseGuards(JwtAuthGuard , RolesGuard)
+  @Roles(Role.ADMIN)
+  profile(@CurrentUser() user: User) {
+    return this.authService.profile(user);
   }
 }
