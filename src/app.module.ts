@@ -7,6 +7,9 @@ import { UsersController } from './users/users.controller';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { log } from 'console';
+import { RolesModule } from './roles/roles.module';
+import { PermissionsModule } from './permissions/permissions.module';
+
 
 @Module({
   imports: [
@@ -28,15 +31,22 @@ import { log } from 'console';
           database: configService.get<string>('DB_NAME'),
           autoLoadEntities: true,
           synchronize: false,
-          ssl: {
-            rejectUnauthorized: false,
-          },
+           ssl:
+          configService.get('DB_SSL') === 'true'
+        ? { rejectUnauthorized: false }
+        : false,
+
+
         };
+
+
       },
     }),
 
     UsersModule,
     AuthModule,
+    RolesModule,
+    PermissionsModule,
   ],
 })
 export class AppModule {}
